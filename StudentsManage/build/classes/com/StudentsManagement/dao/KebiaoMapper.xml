@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.StudentsManagement.dao.KebiaoMapper">
+	<resultMap type="Kebiao" id="KebiaoResult">
+		<id property="kecheng_id" column="kecheng_id" />
+		<result property="shijian" column="shijian" />
+		<result property="jieci" column="jieci" />
+		<result property="jiaoshi" column="jiaoshi" />
+
+
+		<association property="teacher" javaType="Teacher">
+			<id property="id" column="id" />
+			<result property="xingming" column="xingming" />
+		</association>
+		<association property="kecheng" javaType="Kecheng">
+			<id property="id" column="id" />
+			<result property="bianhao" column="bianhao" />
+			<result property="mingcheng" column="mingcheng" />
+			<result property="keshi" column="keshi" />
+		</association>
+
+	</resultMap>
+
+
+
+
+	<!-- 获取所有课表 -->
+	<select id="getAllKebiao" resultMap="KebiaoResult">
+		SELECT
+		kb.id,kb.shijian,kb.jieci,kb.jiaoshi,ke.bianhao,ke.mingcheng,ke.keshi,ls.xingming
+		FROM t_kebiao kb,t_kecheng ke,t_laoshi ls
+		WHERE ke.id=kb.kecheng_id AND
+		ls.id=kb.laoshi_id
+	</select>
+	<!-- 通过老师id获取课表 -->
+	<select id="getKebiaoByTeacherID" resultMap="KebiaoResult"
+		parameterType="Integer">
+		SELECT kb.*,kc.*
+		FROM t_kebiao kb,t_kecheng kc
+		WHERE
+		kb.kecheng_id=kc.id AND kb.laoshi_id=#{laoshi_id}
+	</select>
+	<!-- 通过学生id获取课表 -->
+	<select id="getKebiaoByStudentID" resultMap="KebiaoResult"
+		parameterType="Integer">
+
+		SELECT DISTINCT xkb.* ,kc.*,kb.*,l.*
+		FROM t_xuesheng xs,t_kecheng kc,t_kebiao kb,t_xuesheng_kebiao xkb,t_laoshi
+		l
+		WHERE xs.id=xkb.xuesheng_id
+		AND kb.kecheng_id=kc.id
+		AND xkb.kebiao_id=kb.id
+		AND l.`id`=kb.`laoshi_id`
+		AND xs.id=#{xs.id}
+
+
+	</select>
+</mapper>
